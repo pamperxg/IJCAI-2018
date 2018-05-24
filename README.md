@@ -1,3 +1,3 @@
 # IJCAI-2018
-Ali mama search advertising transformation forecast
-参考Talkingdata kernel，最终100多名，运行时间不到十分钟
+- 阿里妈妈搜索广告转化预测
+- 代码参考自Talkingdata的kernel，最终100多名，运行时间不到十分钟
