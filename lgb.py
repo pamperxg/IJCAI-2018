@@ -14,7 +14,9 @@ all_df = pd.read_pickle('../data/row_feats_ex_list_ab.pkl')
 test_b = pd.read_table('../data/round2_ijcai_18_test_b_20180510.txt',header=0,delim_whitespace=True)
 all_df.loc[all_df['day']==31,'day'] = 0
 
-# predictors=[]
+
+--------------------------------------------------------------------------------------------------------------
+#一些提取特征方法
 #前面一次，后面一次搜索的间隔
 def do_next_Query( df,agg_suffix='nextQuery', agg_type='float32'):
     
@@ -74,7 +76,6 @@ def do_prev_Query( df,agg_suffix='prevQuery', agg_type='float32'):
         gc.collect()
     return (df)
 
-# predictors=[]
 #历史一段时间内的搜索、转化数
 def get_pre_conver_query(df,train_day,day_gap):
     train_df = df[df.day==train_day]
@@ -101,89 +102,6 @@ def get_pre_conver_query(df,train_day,day_gap):
         predictors.append(query_feats)
         predictors.append(conver_feats)
     return train_df
-
-# pre2day = get_pre_conver_query(all_df,7,2)
-# his_2day_conver_num = pre2day[predictors]
-# predictors=[]
-# pre7day = get_pre_conver_query(all_df,7,7)
-# his_7day_conver_num = pre7day[predictors]
-# his_query_conver_num = pd.concat([his_2day_conver_num,his_7day_conver_num],axis=1)
-
-#一些加了没什么用的统计特征
-# def get_his_stats_feat(df,train_day,day_gap):
-#     train_df = df[df.day==train_day]
-#     feats_df = df[(df.day<train_day)&(df.day>=train_day-day_gap)]
-#     MEAN_FE = [
-#         ['user_id','context_page_id'],
-#         ['user_id','item_collected_level'],
-#         ['user_id','item_price_level'],
-#         ['user_id','item_pv_level'],
-#         ['user_id','item_sales_level'],
-#         ['user_id','shop_review_num_level'],
-#         ['user_id','shop_review_positive_rate'],
-#         ['user_id','shop_score_delivery'],
-#         ['user_id','shop_score_service'],
-#         ['user_id','shop_score_description'],
-#         ['user_id','shop_star_level'],
-#         ['item_id','context_page_id'],
-#         ['item_id','user_age_level'],
-#         ['item_id','user_star_level'],
-#         ['shop_id','context_page_id'],
-#         ['shop_id','user_age_level'],
-#         ['shop_id','user_star_level'],
-#         ['item_brand_id','user_age_level'],
-#         ['item_brand_id','user_star_level']
-#     ]
-#     VAR_FE = [
-#         ['user_id','context_page_id'],
-#         ['user_id','item_collected_level'],
-#         ['user_id','item_price_level'],
-#         ['user_id','item_pv_level'],
-#         ['user_id','item_sales_level'],
-#         ['user_id','shop_review_num_level'],
-#         ['user_id','shop_review_positive_rate'],
-#         ['user_id','shop_score_delivery'],
-#         ['user_id','shop_score_service'],
-#         ['user_id','shop_score_description'],
-#         ['user_id','shop_star_level'],
-#         ['item_id','context_page_id'],
-#         ['item_id','user_age_level'],
-#         ['item_id','user_star_level'],
-#         ['shop_id','context_page_id'],
-#         ['shop_id','user_age_level'],
-#         ['shop_id','user_star_level'],
-#         ['item_brand_id','user_age_level'],
-#         ['item_brand_id','user_star_level']
-
-#     ]
-#     UNIQ_FE = [
-#         ['user_id','item_id'],
-#         ['user_id','shop_id'],
-#         ['user_id','item_brand_id']
-#     ]
-#     for cols in MEAN_FE:
-#         feats = '{}_{}_{}'.format('_'.join(cols),day_gap,'mean')
-#         print("\nGen",feats)
-#         groupby_object = feats_df.groupby([cols[0]])
-#         train_df = train_df.merge(groupby_object[cols[1]].mean().reset_index().\
-#                                  rename(columns={cols[1]:feats}),on=cols[0],how='left')
-#         predictors.append(feats)
-#     for cols in VAR_FE:
-#         feats = '{}_{}_{}'.format('_'.join(cols),day_gap,'var')
-#         print("\nGen",feats)
-#         groupby_object = feats_df.groupby([cols[0]])
-#         train_df = train_df.merge(groupby_object[cols[1]].var().reset_index().\
-#                                  rename(columns={cols[1]:feats}),on=cols[0],how='left')
-#         predictors.append(feats)
-
-#     for cols in UNIQ_FE:
-#         feats = '{}_{}_{}'.format('_'.join(cols),day_gap,'uniq')
-#         print("\nGen",feats)
-#         groupby_object = feats_df.groupby([cols[0]])
-#         train_df = train_df.merge(groupby_object[cols[1]].nunique().reset_index().\
-#                                  rename(columns={cols[1]:feats}),on=cols[0],how='left')
-#         predictors.append(feats)
-#     return train_df
 
 def do_count( df, group_cols, agg_type='uint32', show_max=False, show_agg=True ):
     agg_name='{}count'.format('_'.join(group_cols))  
@@ -261,6 +179,84 @@ def do_var( df, group_cols, counted, agg_type='float16', show_max=False, show_ag
     gc.collect()
     return( df )
 
+#一些加了没什么用的统计特征
+# def get_his_stats_feat(df,train_day,day_gap):
+#     train_df = df[df.day==train_day]
+#     feats_df = df[(df.day<train_day)&(df.day>=train_day-day_gap)]
+#     MEAN_FE = [
+#         ['user_id','context_page_id'],
+#         ['user_id','item_collected_level'],
+#         ['user_id','item_price_level'],
+#         ['user_id','item_pv_level'],
+#         ['user_id','item_sales_level'],
+#         ['user_id','shop_review_num_level'],
+#         ['user_id','shop_review_positive_rate'],
+#         ['user_id','shop_score_delivery'],
+#         ['user_id','shop_score_service'],
+#         ['user_id','shop_score_description'],
+#         ['user_id','shop_star_level'],
+#         ['item_id','context_page_id'],
+#         ['item_id','user_age_level'],
+#         ['item_id','user_star_level'],
+#         ['shop_id','context_page_id'],
+#         ['shop_id','user_age_level'],
+#         ['shop_id','user_star_level'],
+#         ['item_brand_id','user_age_level'],
+#         ['item_brand_id','user_star_level']
+#     ]
+#     VAR_FE = [
+#         ['user_id','context_page_id'],
+#         ['user_id','item_collected_level'],
+#         ['user_id','item_price_level'],
+#         ['user_id','item_pv_level'],
+#         ['user_id','item_sales_level'],
+#         ['user_id','shop_review_num_level'],
+#         ['user_id','shop_review_positive_rate'],
+#         ['user_id','shop_score_delivery'],
+#         ['user_id','shop_score_service'],
+#         ['user_id','shop_score_description'],
+#         ['user_id','shop_star_level'],
+#         ['item_id','context_page_id'],
+#         ['item_id','user_age_level'],
+#         ['item_id','user_star_level'],
+#         ['shop_id','context_page_id'],
+#         ['shop_id','user_age_level'],
+#         ['shop_id','user_star_level'],
+#         ['item_brand_id','user_age_level'],
+#         ['item_brand_id','user_star_level']
+
+#     ]
+#     UNIQ_FE = [
+#         ['user_id','item_id'],
+#         ['user_id','shop_id'],
+#         ['user_id','item_brand_id']
+#     ]
+#     for cols in MEAN_FE:
+#         feats = '{}_{}_{}'.format('_'.join(cols),day_gap,'mean')
+#         print("\nGen",feats)
+#         groupby_object = feats_df.groupby([cols[0]])
+#         train_df = train_df.merge(groupby_object[cols[1]].mean().reset_index().\
+#                                  rename(columns={cols[1]:feats}),on=cols[0],how='left')
+#         predictors.append(feats)
+#     for cols in VAR_FE:
+#         feats = '{}_{}_{}'.format('_'.join(cols),day_gap,'var')
+#         print("\nGen",feats)
+#         groupby_object = feats_df.groupby([cols[0]])
+#         train_df = train_df.merge(groupby_object[cols[1]].var().reset_index().\
+#                                  rename(columns={cols[1]:feats}),on=cols[0],how='left')
+#         predictors.append(feats)
+
+#     for cols in UNIQ_FE:
+#         feats = '{}_{}_{}'.format('_'.join(cols),day_gap,'uniq')
+#         print("\nGen",feats)
+#         groupby_object = feats_df.groupby([cols[0]])
+#         train_df = train_df.merge(groupby_object[cols[1]].nunique().reset_index().\
+#                                  rename(columns={cols[1]:feats}),on=cols[0],how='left')
+#         predictors.append(feats)
+#     return train_df
+
+--------------------------------------------------------------------------------------------------------------
+#特征生成
 day7 = all_df[all_df.day==7]
 day7 = day7.sort_values(by='context_timestamp')
 #user下一次搜索时间
@@ -294,7 +290,6 @@ for col in CUMCOUNT_QUERY:
     day7 = do_cumcount(day7,col,'context_timestamp')
     #一天出现多少次
     day7 = do_count(day7,col)
-
 day7 = pd.concat([day7,his_query_conver_num],axis=1)
 
 #一些统计特征
@@ -304,12 +299,13 @@ day7 = pd.concat([day7,his_query_conver_num],axis=1)
 # stats_feats = stats_feats[predictors]
 # day7 = pd.concat([day7,stats_feats],axis=1)
 
+--------------------------------------------------------------------------------------------------------------
 #模型训练测试
 train = day7[day7.is_trade.notnull()]
 test = day7[day7.is_trade.isnull()]
 ex_list = ['context_timestamp','instance_id','is_trade','day','hour']
 features = [i for i in list(train.columns) if i not in ex_list]
-print('特征数目：',len(features))
+print('特征数目：',len(features))  #77
 
 train_df = train[train.hour<10]
 # train_df = pd.concat([train_df,day4])
@@ -344,7 +340,6 @@ params = {
 
 lgb_train = lgb.Dataset(X_train, y_train)
 lgb_eval = lgb.Dataset(X_test, y_test)
-
 print('Start training...')
 # train
 gbm = lgb.train(params,
@@ -364,10 +359,11 @@ gbm_a = lgb.train(params,
                 early_stopping_rounds=50
 )
 
+--------------------------------------------------------------------------------------------------------------
 #生成提交结果
 y_pred = gbm_a.predict(test_a, num_iteration=gbm_a.best_iteration)
 a_pred = test[['instance_id']]
 a_pred['predicted_score'] = y_pred
 sub = test_b[['instance_id']]
 sub = pd.merge(sub,a_pred,on='instance_id',how='left')
-sub.to_csv('../sub/sub_0511_.txt',index=None,sep=' ')
+sub.to_csv('../sub/sub.txt',index=None,sep=' ')
