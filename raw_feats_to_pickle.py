@@ -41,6 +41,5 @@ delta = datetime.timedelta(hours=8)
 all_df['context_timestamp1'] = all_df['context_timestamp1'].apply(lambda s:s+delta)
 all_df['day'] = all_df['context_timestamp1'].apply(lambda s:s.day)
 all_df['hour'] = all_df['context_timestamp1'].apply(lambda s:s.hour)
-
 all_df.drop(['context_timestamp1'],axis=1,inplace=True)
 all_df.to_pickle('../data/row_feats_ex_list_ab.pkl')
